@@ -26,10 +26,13 @@ from .pyrandaPlot  import pyrandaPlot
 from .pyrandaUtils import *
 from .pyrandaTex   import pyrandaTex
 from .pyrandaElliptical import pyrandaPoisson
+from kernelStats import kernelStats
                                               
 class pyrandaSim:
 
     def __init__(self,name,meshOptions,silent=False):
+        self.KS = kernelStats()
+        self.KS.initTimestep()
 
         self.name = name
         self.silent = silent
@@ -725,6 +728,7 @@ class pyrandaSim:
         #import pdb
         #pdb.set_trace()
         for ii in range(5):
+            self.KS.beginTimestep()
             #    ii
             FLUX = self.updateFlux()
             for U in self.conserved:
@@ -735,6 +739,7 @@ class pyrandaSim:
             time = time_i + eta[ii]*dt
             self.time = time
             self.updateVars()
+            self.KS.endTimestep()
 
         self.cycle += 1
 
