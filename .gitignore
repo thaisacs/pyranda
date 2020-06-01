@@ -6,3 +6,5 @@ pyranda.egg-info
 *.o
 *.so
 *.a
+install_location_pyranda/
+build/
