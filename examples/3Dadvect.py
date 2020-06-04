@@ -1,17 +1,26 @@
 import re
 import sys
 import time
-import numpy 
+import numpy
+import matplotlib
+matplotlib.use('agg',warn=False, force=True)
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
 from pyranda import pyrandaSim, pyrandaBC, pyrandaTimestep
 
+from kernelStats import kernelStats
+from argParse import get_args
 
-
-
+args = get_args('python 3Dadvect.py')
 
 problem = '3D Advection'
+
+if(args.max_pi is not None):
+    KS = kernelStats(args.max_pi, True)
+else:
+    KS = kernelStats()
+KS.initTimestep()
 
 ## Define a mesh
 Npts = 32
@@ -21,11 +30,10 @@ ydom = (0.0, 2*pi*FF,  Npts, periodic=True)
 zdom = (0.0, 2*pi*FF,  Npts, periodic=True)
 """.replace('Npts',str(Npts)).replace('pi',str(numpy.pi)).replace('FF',str( float(Npts-1)/Npts ) )
 
-    
+
 # Initialize a simulation object on a mesh
 ss = pyrandaSim(problem,imesh)
 ss.addPackage( pyrandaTimestep(ss) )
-
 
 # Define the equations of motion
 eom ="""
@@ -102,20 +110,18 @@ rad = sqrt( (meshx-pi)**2 + (meshy-pi)**2 + (meshz-pi)**2 )
 
 # Set the initial conditions
 ss.setIC(ic)
-    
+
 # Length scale for art. viscosity
 # Initialize variables
 x = ss.mesh.coords[0].data
 y = ss.mesh.coords[1].data
 z = ss.mesh.coords[2].data
 
-
 # Write a time loop
 time = 0.0
 viz = True
 
 # Approx a max dt and stopping time
-
 
 # Mesh for viz on master
 xx   =  ss.PyMPI.zbar( x ) / Npts
@@ -148,7 +154,6 @@ f2 = ss.gfilter( f1 )
 error = ( ddx1 - ddx2 )
 Ferror = ( f1 - f2 )
 
-
 e1d = ss.PyMPI.zbar( error )[:,0] / Npts
 f1d = ss.PyMPI.zbar( Ferror )[:,0] / Npts
 x1d = ss.PyMPI.zbar( x     )[:,0] / Npts
@@ -158,6 +163,7 @@ if (ss.PyMPI.master):
     plt.plot( x1d, f1d , 'k' )
 
 while time < 10.0:
+    KS.beginTimestep()
 
     # Update the EOM and get next dt
     time = ss.rk4(time,dt)
@@ -170,8 +176,7 @@ while time < 10.0:
     TIME.append(time)
     ENST.append(enst)
     TKE.append(tke)
-    
-    
+
     ss.iprint("%s -- %s --- TKE: %s " % (cnt,time,tke)  )
     cnt += 1
     if viz:
@@ -181,16 +186,17 @@ while time < 10.0:
         #v = ss.variables[pvar].data[:,:,16]
         if (ss.PyMPI.master and (cnt%viz_freq == 0)) and True:
             plt.figure(2)
-            plt.clf()            
+            plt.clf()
             plt.contourf( xx,yy,v ,64 , cmap=cm.jet)
             plt.title(pvar)
             plt.pause(.001)
 
-
+    KS.endTimestep()
 
 if (ss.PyMPI.master):
     plt.figure()
     plt.plot(TIME,TKE,'k--')
     plt.plot(TIME,ENST,'b--')
-    plt.show()            
+    plt.show()
 
+KS.exitTimestep()

@@ -2,12 +2,39 @@ from __future__ import print_function
 import re
 import sys
 import time
-import numpy 
+import numpy
+import matplotlib
+matplotlib.use('agg',warn=False, force=True)
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
 from pyranda import pyrandaSim, pyrandaTimestep
 
+from kernelStats import kernelStats
+from argParse import get_args
+
+args = get_args('python TaylorGreen.py')
+
+problem = '3D Advection'
+
+if(args.max_pi is not None):
+    KS = kernelStats(args.max_pi, True)
+else:
+    KS = kernelStats()
+KS.initTimestep()
+
+## Define a mesh
+Npts = 32
+imesh = """
+xdom = (0.0, 2*pi*FF,  Npts, periodic=True)
+ydom = (0.0, 2*pi*FF,  Npts, periodic=True)
+zdom = (0.0, 2*pi*FF,  Npts, periodic=True)
+""".replace('Npts',str(Npts)).replace('pi',str(numpy.pi)).replace('FF',str( float(Npts-1)/Npts ) )
+
+
+# Initialize a simulation object on a mesh
+ss = pyrandaSim(problem,imesh)
+ss.addPackage( pyrandaTimestep(ss) )
 
 # Try to get args for testing
 try:
@@ -30,11 +57,9 @@ ydom = (0.0, 2*pi*FF,  Npts, periodic=True)
 zdom = (0.0, 2*pi*FF,  Npts, periodic=True)
 """.replace('Npts',str(Npts)).replace('pi',str(numpy.pi)).replace('FF',str( float(Npts-1)/Npts ) )
 
-    
 # Initialize a simulation object on a mesh
 ss = pyrandaSim(problem,imesh)
 ss.addPackage( pyrandaTimestep(ss) )
-
 
 # Define the equations of motion
 eom ="""
@@ -88,7 +113,6 @@ ddt(:Et:)   =  -ddx( (:Et: - :tauxx:)*:u: - :tauxy:*:v: - :tauxz:*:w: )  - ddy( 
 # Add the EOM to the solver
 ss.EOM(eom)
 
-
 # Initialize variables
 ic = """
 :gamma: = 1.4
@@ -112,7 +136,7 @@ L = 1.0
 
 # Set the initial conditions
 ss.setIC(ic)
-    
+
 # Length scale for art. viscosity
 # Initialize variables
 x = ss.mesh.coords[0].data
@@ -138,11 +162,12 @@ TKE = []
 ENST = []
 TIME = []
 
-tstop = 25.0
+tstop = 10.0
 if test:
     tstop = .1
-    
+
 while time < tstop:
+    KS.beginTimestep()
 
     # Update the EOM and get next dt
     time = ss.rk4(time,dt)
@@ -155,8 +180,7 @@ while time < tstop:
     TIME.append(time)
     ENST.append(enst)
     TKE.append(tke)
-    
-    
+
     ss.iprint("%s -- %s --- TKE: %s " % (cnt,time,tke)  )
     cnt += 1
     if viz:
@@ -164,18 +188,18 @@ while time < tstop:
         # Write viz data and plot
         if (cnt%viz_freq == 0):
             ss.write()
-            
+
             ss.plot.figure(2)
-            ss.plot.clf()            
+            ss.plot.clf()
             ss.plot.contourf(pvar ,64 , slice3d='k=16', cmap=cm.jet)
             ss.plot.title(pvar+',Time=%f' % time)
 
-
+    KS.endTimestep()
 
 data = ss.PyMPI.subsum3xz( ss.mesh.coords[1].data ) / (Npts*Npts)
 if ss.PyMPI.master:
     print(data)
-            
+
 if test:
     print(enst)
 else:
@@ -183,5 +207,6 @@ else:
         plt.figure()
         plt.plot(TIME,TKE,'k--')
         plt.plot(TIME,ENST,'b--')
-        plt.show()            
+        plt.show()
 
+KS.exitTimestep()
