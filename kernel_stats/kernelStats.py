@@ -13,6 +13,7 @@ class kernelStats:
         self.current_iteration = 0
         self.init_time = 0
         self.begin_time = 0
+        self.end_time = 0
         self.pi_sum = 0
         self. early_stop = early_stop
 
@@ -52,10 +53,9 @@ class kernelStats:
         self.begin_time = self.getCurrentTime();
 
     def endTimestep(self):
-        end_time = self.getCurrentTime()
-        self.print_timestep(self.PRINT_STATS, end_time);
-        self.pi_sum += end_time - self.begin_time
-
+        self.end_time = self.getCurrentTime()
+        self.print_timestep(self.PRINT_STATS, self.end_time);
+        self.pi_sum += self.end_time - self.begin_time
         self.exit()
 
     def print_timestep(self, ptype, collected_time):
@@ -70,4 +70,4 @@ class kernelStats:
             elif(ptype == self.PRINT_AVG):
                print("[MO833] PI avg,{},{}".format(self.pi_sum/self.current_iteration, self.current_iteration))
             elif(ptype == self.PRINT_BETA):
-               print("[MO833] Beta,{}".format((collected_time-self.init_time)/self.pi_sum))
+               print("[MO833] Beta,{}".format((collected_time-self.end_time)/self.pi_sum))

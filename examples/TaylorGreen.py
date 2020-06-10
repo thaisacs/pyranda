@@ -207,6 +207,6 @@ else:
         plt.figure()
         plt.plot(TIME,TKE,'k--')
         plt.plot(TIME,ENST,'b--')
-        plt.show()
+        plt.savefig('taylor.png')
 
 KS.exitTimestep()

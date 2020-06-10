@@ -197,6 +197,6 @@ if (ss.PyMPI.master):
     plt.figure()
     plt.plot(TIME,TKE,'k--')
     plt.plot(TIME,ENST,'b--')
-    plt.show()
+    plt.savefig('3da.png')
 
 KS.exitTimestep()
