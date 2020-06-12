@@ -60,14 +60,14 @@ class kernelStats:
 
     def print_timestep(self, ptype, collected_time):
         rank = MPI.COMM_WORLD.Get_rank()
-        if(rank == 0):
-            if(ptype == self.PRINT_INIT):
-               print("[MO866] Init time,{}".format(collected_time - self.init_time))
-            elif(ptype == self.PRINT_STATS):
-               print("[MO833] Paramount Iteration,{},{},{}".format(self.current_iteration, collected_time - self.begin_time, collected_time - self.init_time))
-            elif(ptype == self.PRINT_EXIT):
-               print("[MO833] Total time,{}".format(collected_time - self.init_time))
-            elif(ptype == self.PRINT_AVG):
-               print("[MO833] PI avg,{},{}".format(self.pi_sum/self.current_iteration, self.current_iteration))
-            elif(ptype == self.PRINT_BETA):
-               print("[MO833] Beta,{}".format((collected_time-self.end_time)/self.pi_sum))
+
+        if(ptype == self.PRINT_INIT):
+           print("[MO866] Init time,{},{}".format(rank, collected_time - self.init_time))
+        elif(ptype == self.PRINT_STATS):
+           print("[MO833] Paramount Iteration,{},{},{},{}".format(rank, self.current_iteration, collected_time - self.begin_time, collected_time - self.init_time))
+        elif(ptype == self.PRINT_EXIT):
+           print("[MO833] Total time,{},{}".format(rank,collected_time - self.init_time))
+        elif(ptype == self.PRINT_AVG):
+           print("[MO833] PI avg,{},{},{}".format(rank,self.pi_sum/self.current_iteration, self.current_iteration))
+        elif(ptype == self.PRINT_BETA):
+           print("[MO833] Beta,{},{}".format(rank,(collected_time-self.end_time)/self.pi_sum))
