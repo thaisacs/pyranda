@@ -25,8 +25,6 @@ class kernelStats:
         self.init_time = self.getCurrentTime()
 
     def exit(self):
-        rank = MPI.COMM_WORLD.Get_rank()
-
         if(self.early_stop and self.current_iteration == self.stop_in):
             self.exitTimestep()
             MPI.COMM_WORLD.Abort()
