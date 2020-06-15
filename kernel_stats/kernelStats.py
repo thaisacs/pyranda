@@ -37,7 +37,10 @@ class kernelStats:
             self.print_timestep(self.PRINT_AVG, 0)
             self.print_timestep(self.PRINT_BETA, current_time);
 
-        self.print_timestep(self.PRINT_EXIT, current_time);
+        rank = MPI.COMM_WORLD.Get_rank()
+
+        if(rank == 0):
+            self.print_timestep(self.PRINT_EXIT, current_time);
 
     def beginTimestep(self):
         begin_time_old = self.begin_time;
