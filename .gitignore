@@ -8,3 +8,5 @@ pyranda.egg-info
 *.a
 install_location_pyranda/
 build/
+pyranda/parcop/parcopmodule.c
+examples/TGvortex/

@@ -1,22 +1,15 @@
 #!/bin/bash
 
 mkdir -p results
+path=$PWD/results
 cd ../examples
 
-/usr/bin/time -o ../experiments/results/3Dadvect-TIME-2.out -p mpiexec -n 2 python -m mpi4py 3Dadvect.py 1> ../experiments/results/3Dadvect-2.out 2> ../experiments/results/3Dadvect-2.err
-mv 3da.png ../experiments/results/3Dadvect-2.png
-
-/usr/bin/time -o ../experiments/results/3Dadvect-TIME-4.out -p mpiexec -n 4 python -m mpi4py 3Dadvect.py 1> ../experiments/results/3Dadvect-4.out 2> ../experiments/results/3Dadvect-4.err
-mv 3da.png ../experiments/results/3Dadvect-4.png
-
-/usr/bin/time -o ../experiments/results/3Dadvect-TIME-8.out -p mpiexec -n 8 python -m mpi4py 3Dadvect.py 1> ../experiments/results/3Dadvect-8.out 2> ../experiments/results/3Dadvect-8.err
-mv 3da.png ../experiments/results/3Dadvect-8.png
-
-/usr/bin/time -o ../experiments/results/TaylorGreen-TIME-2.out -p mpiexec -n 2 python -m mpi4py TaylorGreen.py 1> ../experiments/results/TaylorGreen-2.out 2> ../experiments/results/TaylorGreen-2.err
-mv taylor.png ../experiments/results/Taylor-2.png
-
-/usr/bin/time -o ../experiments/results/TaylorGreen-TIME-4.out -p mpiexec -n 4 python -m mpi4py TaylorGreen.py 1> ../experiments/results/TaylorGreen-4.out 2> ../experiments/results/TaylorGreen-4.err
-mv taylor.png ../experiments/results/Taylor-4.png
-
-/usr/bin/time -o ../experiments/results/TaylorGreen-TIME-8.out -p mpiexec -n 8 python -m mpi4py TaylorGreen.py 1> ../experiments/results/TaylorGreen-8.out 2> ../experiments/results/TaylorGreen-8.err
-mv taylor.png ../experiments/results/Taylor-8.png
+for bench in 3Dadvect TaylorGreen; do
+  for threads in 1 2 4 8; do
+    now=$(date +"%m-%d-%y-%T")
+    exp_path=$path/$bench/${threads}node06/$now
+    mkdir -p $exp_path
+    /usr/bin/time -o $exp_path/results.time -p mpiexec -n $threads python -m mpi4py ${bench}.py 1> $exp_path/results.out 2> $exp_path/results.err
+    mv 3da.png $exp_path/results.png
+  done
+done
