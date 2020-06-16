@@ -49,7 +49,7 @@ class kernelStats:
         if(self.current_iteration == 0):
             current_time = self.getCurrentTime()
 
-            self.print_timestep(self.PRINT_INIT, current_time);
+            #self.print_timestep(self.PRINT_INIT, current_time);
 
             if(self.stop_in == 0):
                 self.exit()
