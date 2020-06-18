@@ -76,7 +76,7 @@ class kernelStats:
         elif(ptype == self.PRINT_STATS):
            print("[MO833] Paramount Iteration,{},{},{},{}".format(rank, self.current_iteration, collected_time - self.init_time, self.pi))
         elif(ptype == self.PRINT_EXIT):
-           print("[MO833] Total time,{},{}".format(rank,collected_time - self.init_time))
+           print("[MO833] Total time,{}".format(collected_time - self.init_time))
         elif(ptype == self.PRINT_AVG):
            print("[MO833] PI avg,{},{},{}".format(rank,self.pi_sum/self.current_iteration, self.current_iteration))
         elif(ptype == self.PRINT_BETA):
