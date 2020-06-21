@@ -1,3 +1,5 @@
-!NBLOCKS 2 
+!NBLOCKS 4 
 vis00000/proc-00000.00000.vtk
 vis00000/proc-00001.00000.vtk
+vis00000/proc-00002.00000.vtk
+vis00000/proc-00003.00000.vtk
