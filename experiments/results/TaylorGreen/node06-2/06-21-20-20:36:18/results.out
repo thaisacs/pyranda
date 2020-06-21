@@ -1,0 +1,219 @@
+--------------------------------------------------------------------------
+[[55013,1],1]: A high-performance Open MPI point-to-point messaging module
+was unable to find any relevant network interfaces:
+
+Module: OpenFabrics (openib)
+  Host: node06
+
+Another transport will be used instead, although this may result in
+lower performance.
+
+NOTE: You can disable this warning by setting the MCA parameter
+btl_base_warn_component_unused to 0.
+--------------------------------------------------------------------------
+ 
+                                 _       
+                                | |      
+ _ __  _   _ _ __ __ _ _ __   __| | __ _ 
+| '_ \| | | | '__/ _` | '_ \ / _` |/ _` |
+| |_) | |_| | | | (_| | | | | (_| | (_| |
+| .__/ \__, |_|  \__,_|_| |_|\__,_|\__,_|
+| |     __/ |                            
+|_|    |___/                             
+
+Version 1.0
+
+Copyright (c) 2020 Lawrence Livermore National Laboratory (LLNL-CODE-749864)
+All rights reserved. 
+For details about use and distribution, please read: pyranda/LICENSE
+
+ 
+                                 _       
+                                | |      
+ _ __  _   _ _ __ __ _ _ __   __| | __ _ 
+| '_ \| | | | '__/ _` | '_ \ / _` |/ _` |
+| |_) | |_| | | | (_| | | | | (_| | (_| |
+| .__/ \__, |_|  \__,_|_| |_|\__,_|\__,_|
+| |     __/ |                            
+|_|    |___/                             
+
+Version 1.0
+
+Copyright (c) 2020 Lawrence Livermore National Laboratory (LLNL-CODE-749864)
+All rights reserved. 
+For details about use and distribution, please read: pyranda/LICENSE
+
+Adding variables: tke
+Adding variables: tauxz
+Adding variables: tauxy
+Adding variables: tauxx
+Adding variables: tauzz
+Adding variables: cs
+Adding variables: vx
+Adding variables: vy
+Adding variables: vz
+Adding variables: tauyy
+Adding variables: tauyz
+Adding variables: taudia
+Adding variables: rhow
+Adding variables: rhov
+Adding variables: rhou
+Adding variables: S
+Adding variables: rho
+Adding variables: dt
+Adding variables: wz
+Adding variables: wy
+Adding variables: wx
+Adding variables: enst
+Adding variables: uy
+Adding variables: ux
+Adding variables: uz
+Adding variables: beta
+Adding variables: mu
+Adding variables: p
+Adding variables: u
+Adding variables: w
+Adding variables: v
+Adding variables: Et
+Adding variables: div
+Adding variables: gamma
+Adding equations of motion: 
+(1)   ddt(:rho:)  =  -ddx(:rho:*:u:)            - ddy(:rho:*:v:)               - ddz(:rho:*:w:)
+(2)   ddt(:rhou:) =  -ddx(:rhou:*:u: - :tauxx:) - ddy(:rhou:*:v: - :tauxy:)    - ddz(:rhou:*:w: - :tauxz:)
+(3)   ddt(:rhov:) =  -ddx(:rhov:*:u: - :tauxy:) - ddy(:rhov:*:v: - :tauyy:)    - ddz(:rhov:*:w: - :tauyz:)
+(4)   ddt(:rhow:) =  -ddx(:rhow:*:u: - :tauxz:) - ddy(:rhow:*:v: - :tauyz:)    - ddz(:rhow:*:w: - :tauzz:)
+(5)   ddt(:Et:)   =  -ddx( (:Et: - :tauxx:)*:u: - :tauxy:*:v: - :tauxz:*:w: )  - ddy( (:Et: - :tauyy:)*:v: -:tauxy:*:u: - :tauyz:*:w:) - ddz( (:Et: - :tauzz:)*:w: - :tauxz:*:u: - :tauyz:*:v: )
+(6)   :rho:       =  fbar( :rho:  )
+(7)   :rhou:      =  fbar( :rhou: )
+(8)   :rhov:      =  fbar( :rhov: )
+(9)   :rhow:      =  fbar( :rhow: )
+(10)   :Et:        =  fbar( :Et:   )
+(11)   :u:         =  :rhou: / :rho:
+(12)   :v:         =  :rhov: / :rho:
+(13)   :w:         =  :rhow: / :rho:
+(14)   :p:         =  ( :Et: - .5*:rho:*(:u:*:u: + :v:*:v: + :w:*:w:) ) * ( :gamma: - 1.0 )
+(15)   :ux:        =  ddx(:u:)
+(16)   :vy:        =  ddy(:v:)
+(17)   :wz:        =  ddz(:w:)
+(18)   :div:       =  :ux: + :vy: + :wz:
+(19)   :uy:        =  ddy(:u:)
+(20)   :uz:        =  ddz(:u:)
+(21)   :vx:        =  ddx(:v:)
+(22)   :vz:        =  ddz(:v:)
+(23)   :wy:        =  ddy(:w:)
+(24)   :wx:        =  ddx(:w:)
+(25)   :enst:      = sqrt( (:uy:-:vx:)**2 + (:uz: - :wx:)**2 + (:vz:-:wy:)**2 )
+(26)   :tke:       = :rho:*(:u:*:u: + :v:*:v: + :w:*:w:)
+(27)   :S:         = sqrt( :ux:*:ux: + :vy:*:vy: + :wz:*:wz: + .5*((:uy:+:vx:)**2 + (:uz: + :wx:)**2 + (:vz:+:wy:)**2) )
+(28)   :mu:        =  gbar( abs(ring(:S:  )) ) * :rho: * 1.0e-4
+(29)   :beta:      =  gbar( abs(ring(:div:)) * :rho: )  * 7.0e-3
+(30)   :taudia:    =  (:beta:-2./3.*:mu:) *:div: - :p:
+(31)   :tauxx:     =  2.0*:mu:*:ux:   + :taudia:
+(32)   :tauyy:     =  2.0*:mu:*:vy:   + :taudia:
+(33)   :tauzz:     =  2.0*:mu:*:wz:   + :taudia:
+(34)   :tauxy:     = :mu:*(:uy:+:vx:)
+(35)   :tauxz:     = :mu:*(:uz:+:wx:)
+(36)   :tauyz:     = :mu:*(:vz:+:wz:)
+(37)   :cs:  = sqrt( :p: / :rho: * :gamma: )
+(38)   :dt: = dt.courant(:u:,:v:,:w:,:cs:)*1.0
+(39)   :dt: = numpy.minimum(:dt:,0.2 * dt.diff(:beta:,:rho:))
+(40)   :dt: = numpy.minimum(:dt:,0.2 * dt.diff(:mu:,:rho:))
+[MO833] Paramount Iteration,1,1,3.4384739399,0.231043100357
+1 -- 0.007655094827138741 --- TKE: 0.9999993646363982 
+[MO833] Paramount Iteration,0,1,3.43850302696,0.231091976166
+[MO833] Paramount Iteration,1,2,3.66517901421,0.22670507431
+2 -- 0.01531014219937058 --- TKE: 0.9999987436296092 
+[MO833] Paramount Iteration,0,2,3.66521191597,0.226708889008
+[MO833] Paramount Iteration,1,3,3.89189100266,0.226711988449
+3 -- 0.02296514745110674 --- TKE: 0.9999981421825568 
+[MO833] Paramount Iteration,0,3,3.89192485809,0.226712942123
+[MO833] Paramount Iteration,1,4,4.1218957901,0.230004787445
+4 -- 0.030620096953062212 --- TKE: 0.9999975662694895 
+[MO833] Paramount Iteration,0,4,4.12188386917,0.229959011078
+[MO833] Paramount Iteration,1,5,4.34955883026,0.227663040161
+5 -- 0.03827498948310238 --- TKE: 0.999997019618179 
+[MO833] Paramount Iteration,0,5,4.34960389137,0.227720022202
+[MO833] Paramount Iteration,1,6,4.57470798492,0.225149154663
+6 -- 0.04592982891724295 --- TKE: 0.9999965015726414 
+[MO833] Paramount Iteration,0,6,4.57473802567,0.225134134293
+[MO833] Paramount Iteration,1,7,4.80001997948,0.225311994553
+7 -- 0.05358462392792098 --- TKE: 0.9999960064164087 
+[MO833] Paramount Iteration,0,7,4.80004405975,0.225306034088
+[MO833] Paramount Iteration,1,8,5.0252969265,0.225276947021
+8 -- 0.06123938717768596 --- TKE: 0.9999955244578072 
+[MO833] Paramount Iteration,0,8,5.02533006668,0.225286006927
+[MO833] Paramount Iteration,1,9,5.25046992302,0.225172996521
+9 -- 0.068894134153638 --- TKE: 0.9999950452713838 
+[MO833] Paramount Iteration,0,9,5.2505030632,0.225172996521
+[MO833] Paramount Iteration,1,10,5.47835683823,0.227886915207
+10 -- 0.07654888179872577 --- TKE: 0.9999945610579931 
+[MO833] Paramount Iteration,0,10,5.47834396362,0.227840900421
+[MO833] Paramount Iteration,1,11,5.70773482323,0.229377985001
+11 -- 0.0842036471103257 --- TKE: 0.9999940694148598 
+[MO833] Paramount Iteration,0,11,5.70780706406,0.229463100433
+[MO833] Paramount Iteration,1,12,5.93300294876,0.225268125534
+12 -- 0.09185844586135745 --- TKE: 0.9999935746748491 
+[MO833] Paramount Iteration,0,12,5.93303585052,0.225228786469
+[MO833] Paramount Iteration,1,13,6.15834879875,0.225345849991
+13 -- 0.09951329156975781 --- TKE: 0.9999930874211378 
+[MO833] Paramount Iteration,0,13,6.15838098526,0.225345134735
+[MO833] Paramount Iteration,1,14,6.38378190994,0.225433111191
+14 -- 0.10716819479716133 --- TKE: 0.9999926222602606 
+[MO833] Paramount Iteration,0,14,6.38381505013,0.225434064865
+[MO833] Paramount Iteration,1,15,6.60910391808,0.225322008133
+15 -- 0.11482316280474471 --- TKE: 0.9999921946937701 
+[MO833] Paramount Iteration,0,15,6.60913395882,0.225318908691
+[MO833] Paramount Iteration,1,16,6.83515882492,0.226054906845
+16 -- 0.12247818301828596 --- TKE: 0.9999918180567684 
+[MO833] Paramount Iteration,0,16,6.8351919651,0.226058006287
+[MO833] Paramount Iteration,1,17,7.06026387215,0.225105047226
+17 -- 0.13013320956907928 --- TKE: 0.9999915012634157 
+[MO833] Paramount Iteration,0,17,7.06029605865,0.225104093552
+[MO833] Paramount Iteration,1,18,7.28883695602,0.228573083878
+18 -- 0.13778824508292845 --- TKE: 0.9999912480599135 
+[MO833] Paramount Iteration,0,18,7.28890800476,0.228611946106
+19 -- 0.14544329426107913 --- TKE: 0.9999910577277954 
+[MO833] Paramount Iteration,1,19,7.64425992966,0.355422973633
+[MO833] Paramount Iteration,0,19,7.87749099731,0.588582992554
+[MO833] Paramount Iteration,1,20,8.10592985153,0.461669921875
+20 -- 0.15309836364022056 --- TKE: 0.9999909269114449 
+[MO833] Paramount Iteration,0,20,8.10596394539,0.228472948074
+[MO833] Paramount Iteration,1,21,8.33313679695,0.227206945419
+21 -- 0.16075346111029404 --- TKE: 0.9999908517625608 
+[MO833] Paramount Iteration,0,21,8.33317184448,0.227207899094
+[MO833] Paramount Iteration,1,22,8.55876398087,0.225627183914
+22 -- 0.16840859527466936 --- TKE: 0.9999908296111754 
+[MO833] Paramount Iteration,0,22,8.55879998207,0.225628137589
+[MO833] Paramount Iteration,1,23,8.78432583809,0.225561857224
+23 -- 0.17606377475097296 --- TKE: 0.9999908595579194 
+[MO833] Paramount Iteration,0,23,8.7843580246,0.225558042526
+[MO833] Paramount Iteration,1,24,9.00991988182,0.225594043732
+24 -- 0.18371900750791087 --- TKE: 0.999990941859873 
+[MO833] Paramount Iteration,0,24,9.00995206833,0.225594043732
+[MO833] Paramount Iteration,1,25,9.23829889297,0.228379011154
+25 -- 0.19137430031996064 --- TKE: 0.9999910761907654 
+[MO833] Paramount Iteration,0,25,9.23834586143,0.228393793106
+[MO833] Paramount Iteration,1,26,9.46399497986,0.225696086884
+26 -- 0.19902965840177853 --- TKE: 0.9999912593360321 
+[MO833] Paramount Iteration,0,26,9.46402597427,0.225680112839
+[MO833] Paramount Iteration,1,27,9.68943595886,0.225440979004
+27 -- 0.2066850852575455 --- TKE: 0.9999914832485144 
+[MO833] Paramount Iteration,0,27,9.68946790695,0.225441932678
+[MO833] Paramount Iteration,1,28,9.91511082649,0.22567486763
+28 -- 0.2143405827476353 --- TKE: 0.9999917343732541 
+[MO833] Paramount Iteration,0,28,9.91514492035,0.225677013397
+[MO833] Paramount Iteration,1,29,10.1440598965,0.228949069977
+29 -- 0.22199615134063688 --- TKE: 0.9999919948904504 
+[MO833] Paramount Iteration,0,29,10.1440489292,0.228904008865
+[MO833] Paramount Iteration,1,30,10.3696918488,0.225631952286
+30 -- 0.2296517904922707 --- TKE: 0.9999922455899836 
+[MO833] Paramount Iteration,0,30,10.369713068,0.225664138794
+[MO833] Paramount Iteration,1,31,10.5955328941,0.22584104538
+31 -- 0.23730749908149387 --- TKE: 0.9999924692303246 
+[MO833] Paramount Iteration,0,31,10.5955660343,0.225852966309
+[MO833] Paramount Iteration,1,32,10.8213698864,0.225836992264
+32 -- 0.2449632758406315 --- TKE: 0.9999926539577175 
+[MO833] Paramount Iteration,0,32,10.8214030266,0.225836992264
+[MO833] Paramount Iteration,1,33,11.0478518009,0.22648191452
+33 -- 0.25261911973371687 --- TKE: 0.9999927953292762 
+[MO833] Paramount Iteration,0,33,11.0479128361,0.226509809494
