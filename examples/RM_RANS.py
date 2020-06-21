@@ -1,4 +1,6 @@
 import re
+import matplotlib
+matplotlib.use('agg',warn=False, force=True)
 import sys
 import time
 import numpy 

@@ -19,12 +19,26 @@
 ################################################################################
 import sys
 import numpy 
+import matplotlib
+matplotlib.use('agg',warn=False, force=True)
 import matplotlib.pyplot as plt
 from pyranda import pyrandaSim,    pyrandaBC,     pyrandaTimestep
 from pyranda import pyrandaProbes, pyrandaRestart
 from optparse import OptionParser
 ################################################################################
 
+from kernelStats import kernelStats
+from argParse import get_args
+
+args = get_args('python 3Dadvect.py')
+
+problem = '3D Advection'
+
+if(args.max_pi is not None):
+    KS = kernelStats(args.max_pi, True)
+else:
+    KS = kernelStats()
+KS.initTimestep()
 
 ##### Command line parser  #####################################################
 parser = OptionParser()
@@ -325,6 +339,7 @@ ss.write( wvars )
 
 ## Time loop to advance the solution 
 while time < stop_time :
+    KS.beginTimestep()
     
     # Update the EOM and get next dt
     time = ss.rk4(time,dt)
@@ -383,6 +398,7 @@ while time < stop_time :
     # Write a full restart file every 'dump_freq' time steps
     if (ss.cycle%dump_freq == 0) :
         ss.writeRestart( ivars = my_local_data)
+    KS.endTimestep()
 
         
 # Final IO
@@ -406,3 +422,4 @@ ss.iprint("Max val:  %s" % val)
 ss.iprint("Max time: %s" % vtime)
 
 
+KS.exitTimestep()
