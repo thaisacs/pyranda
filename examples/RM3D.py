@@ -7,6 +7,18 @@ from matplotlib import cm
 
 from pyranda import pyrandaSim, pyrandaBC, pyrandaTimestep
 
+from kernelStats import kernelStats
+from argParse import get_args
+
+args = get_args('python RM3D.py')
+
+problem = 'RM3D'
+
+if(args.max_pi is not None):
+    KS = kernelStats(args.max_pi, True)
+else:
+    KS = kernelStats()
+KS.initTimestep()
 
 # Try to get args for testing
 try:
@@ -212,6 +224,7 @@ outVars = ['p','u','v','w','rho','Yh']
 ss.write(outVars)
 
 while time < tstop:
+    KS.beginTimestep()
 
     # Update the EOM and get next dt
     time = ss.rk4(time,dt)
@@ -283,4 +296,6 @@ while time < tstop:
 
         if ( ss.cycle%dmp_freq == 0) :
             ss.write(outVars)
-            
+    KS.endTimestep()
+
+KS.exitTimestep()
