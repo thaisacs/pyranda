@@ -2,6 +2,8 @@ import re
 import sys
 import time
 import numpy 
+import matplotlib
+matplotlib.use('agg',warn=False, force=True)
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
