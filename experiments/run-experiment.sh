@@ -4,7 +4,7 @@ mkdir -p results
 path=$PWD/results
 cd ../examples
 
-for bench in TaylorGreen; do
+for bench in gatech TaylorGreen; do
   for threads in 1 2 4 8; do
     now=$(date +"%m-%d-%y-%T")
     exp_path=$path/$bench/node06-${threads}/$now
